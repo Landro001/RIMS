@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 
 window = Tk()
 
@@ -8,7 +9,7 @@ class Application():
         self.window = window
         self.screen()
         self.screen_frames()
-        self.buttons()
+        self.widgets_search_frame()
         window.mainloop()
 
     def screen(self):
@@ -18,7 +19,7 @@ class Application():
         self.window.geometry('700x500')
         self.window.resizable(True, True)
         self.window.maxsize(width= 900, height= 700)
-        self.window.minsize(width= 400, height= 300)
+        self.window.minsize(width= 500, height= 400)
 
     def screen_frames(self):
         # Criando frame da área de busca
@@ -28,21 +29,68 @@ class Application():
         self.table_frame = Frame(self.window, bg= '#dfe3ee', highlightbackground= '#759fe6', highlightthickness= 3)
         self.table_frame.place(relx= 0.02, rely= 0.5, relwidth= 0.96, relheight= 0.46)
 
-    def buttons(self):
+    def widgets_search_frame(self):
         # Criando botão Limpar
-        self.bt_clean = Button(self.search_frame, text= 'Limpar')
-        self.bt_clean.place(relx= 0.2, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+        self.bt_clean = Button(self.search_frame, text= 'Limpar', 
+                               bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+        self.bt_clean.place(relx= 0.3, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+
         # Criando botão Buscar
-        self.bt_search = Button(self.search_frame, text= 'Buscar')
-        self.bt_search.place(relx= 0.3, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+        self.bt_search = Button(self.search_frame, text= 'Buscar',
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+        self.bt_search.place(relx= 0.4, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+
         # Criando botão Novo
-        self.bt_new = Button(self.search_frame, text= 'Novo')
+        self.bt_new = Button(self.search_frame, text= 'Novo',
+                             bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
         self.bt_new.place(relx= 0.6, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+
         # Criando botão Alterar
-        self.bt_change = Button(self.search_frame, text= 'Alterar')
+        self.bt_change = Button(self.search_frame, text= 'Alterar',
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
         self.bt_change.place(relx= 0.7, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+
         # Criando botão Apagar
-        self.bt_delete = Button(self.search_frame, text= 'Apagar')
+        self.bt_delete = Button(self.search_frame, text= 'Apagar',
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
         self.bt_delete.place(relx= 0.8, rely= 0.1, relwidth= 0.1, relheight= 0.15)
+
+        # Criando label e input do código do rádio
+        self.lb_code = Label(self.search_frame, text='Código do rádio', bg= '#dfe3ee', fg='#107db2')
+        self.lb_code.place(relx= 0.05, rely= 0.05)
+
+        self.code_entry = Entry(self.search_frame, relief= 'groove')
+        self.code_entry.place(relx= 0.05, rely= 0.15, relwidth= 0.2)
+
+        # Criando label e input do nome
+        self.lb_name = Label(self.search_frame, text='Nome', bg= '#dfe3ee', fg='#107db2')
+        self.lb_name.place(relx= 0.05, rely= 0.35)
+
+        self.name_entry = Entry(self.search_frame, relief= 'groove')
+        self.name_entry.place(relx= 0.05, rely= 0.45, relwidth= 0.85)
+
+        # Criando label e input do telefone
+        self.lb_phone = Label(self.search_frame, text='Telefone', bg= '#dfe3ee', fg='#107db2')
+        self.lb_phone.place(relx= 0.05, rely= 0.6)
+
+        self.phone_entry = Entry(self.search_frame, relief= 'groove')
+        self.phone_entry.place(relx= 0.05, rely= 0.7, relwidth= 0.4)
+
+        # Criando label e input do setor
+        self.lb_sector = Label(self.search_frame, text='Setor', bg= '#dfe3ee', fg='#107db2')
+        self.lb_sector.place(relx= 0.5, rely= 0.6)
+
+        self.sector_entry = Entry(self.search_frame, relief= 'groove')
+        self.sector_entry.place(relx= 0.5, rely= 0.7, relwidth= 0.4)
+
+    def list_table_frame(self):
+        self.listRadio = ttk.Treeview(self.table_frame, height= 3, columns=("col1", "col2", "col3", "col4"))
+
+
+        
+
+
+
+
 
 Application()
