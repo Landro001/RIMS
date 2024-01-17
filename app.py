@@ -10,6 +10,7 @@ class Application():
         self.screen()
         self.screen_frames()
         self.widgets_search_frame()
+        self.list_table_frame()
         window.mainloop()
 
     def screen(self):
@@ -84,7 +85,28 @@ class Application():
         self.sector_entry.place(relx= 0.5, rely= 0.7, relwidth= 0.4)
 
     def list_table_frame(self):
-        self.listRadio = ttk.Treeview(self.table_frame, height= 3, columns=("col1", "col2", "col3", "col4"))
+        # Criando a listagem das informações em formato de tabela
+        self.list_radio = ttk.Treeview(self.table_frame, height= 3, columns=("col1", "col2", "col3", "col4", "col5"))
+        self.list_radio.heading('#0', text='')
+        self.list_radio.heading('#1', text='Código')
+        self.list_radio.heading('#2', text='Nome')
+        self.list_radio.heading('#3', text='Telefone')
+        self.list_radio.heading('#4', text='Setor')
+        self.list_radio.heading('#5', text='Observações')
+
+        self.list_radio.column('#0', width= 1)
+        self.list_radio.column('#1', width= 50)
+        self.list_radio.column('#2', width= 135)
+        self.list_radio.column('#3', width= 125)
+        self.list_radio.column('#4', width= 100)
+        self.list_radio.column('#5', width= 150)
+
+        self.list_radio.place(relx= 0.01, rely= 0.1, relwidth= 0.95, relheight= 0.85)
+        
+        #Criando a scrool bar da tabela
+        self.scrool_list = Scrollbar(self.table_frame, orient='vertical')
+        self.list_radio.configure(yscroll= self.scrool_list.set)
+        self.scrool_list.place(relx= 0.96, rely= 0.1, relwidth= 0.03, relheight= 0.85)
 
 
         
