@@ -1,2 +1,5 @@
-# Ingorando a pasta do ambiente virtual
+# Pasta do ambiente virtual
 venv
+
+# Banco de dados sqlite3
+radios.bd

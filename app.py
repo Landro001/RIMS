@@ -1,9 +1,46 @@
 from tkinter import *
 from tkinter import ttk
+import sqlite3
 
 window = Tk()
 
-class Application():
+class Functions():
+    def clean_screen(self):
+        # Limpar o conteúdo escrito nos inputs
+        self.code_entry.delete(0, END)
+        self.name_entry.delete(0, END)
+        self.phone_entry.delete(0, END)
+        self.sector_entry.delete(0, END)
+
+    def bd_connect(self):
+        # Faz a conexão ao banco de dados
+        self.conn = sqlite3.connect('radios.bd')
+        self.cursor = self.conn.cursor()
+        print("Conectando ao banco de dados")
+
+    def bd_disconnect(self):
+        # Desconecta do bando de dados
+        self.conn.close()
+        print("Desconectando do banco de dados")
+
+    def assemble_tables(self):
+        # Monta as tabelas no bando de dados
+        self.bd_connect()
+        # Cria a tabela
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS radios (
+                code INTEGER PRIMARY KEY,
+                customer_name CHAR(40) NOT NULL,
+                phone INTEGER(20),
+                sector CHAR(30),
+                observations TEXT
+            )
+        ''')
+        self.conn.commit()
+        print('Banco de dados criado')
+        self.bd_disconnect()
+
+class Application(Functions):
     def __init__(self):
         #Função principal da aplicação
         self.window = window
@@ -11,6 +48,7 @@ class Application():
         self.screen_frames()
         self.widgets_search_frame()
         self.list_table_frame()
+        self.assemble_tables()
         window.mainloop()
 
     def screen(self):
@@ -33,7 +71,7 @@ class Application():
     def widgets_search_frame(self):
         # Criando botão Limpar
         self.bt_clean = Button(self.search_frame, text= 'Limpar', 
-                               bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+                               bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.clean_screen)
         self.bt_clean.place(relx= 0.3, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando botão Buscar
