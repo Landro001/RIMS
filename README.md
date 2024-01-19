@@ -1,7 +1,5 @@
 # R.I.M.S - Sistema de Gerenciamento de Inventário de Rádio
 
-[![Version Badge](https://badge.fury.io/for/py/RIMS.svg)](https://pypi.org/project/RIMS/)
-[![GitHub](https://github.com/Landro001/RIMS/workflows/CI/badge.svg)](https://github.com/Landro001/RIMS/actions)
 [![Code Coverage](https://codecov.io/gh/Landro001/RIMS/branch/main/graph/badge.svg)](https://codecov.io/gh/Landro001/RIMS)
 [![Issues](https://img.shields.io/github/issues/Landro001/RIMS)](https://github.com/Landro001/RIMS/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/Landro001/RIMS)](https://github.com/Landro001/RIMS/pulls)
