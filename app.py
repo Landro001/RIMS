@@ -10,7 +10,7 @@ class Functions():
         self.code_entry.delete(0, END)
         self.name_entry.delete(0, END)
         self.phone_entry.delete(0, END)
-        self.sector_entry.delete(0, END)
+        self.department_entry.delete(0, END)
 
     def bd_connect(self):
         # Faz a conexão ao banco de dados
@@ -32,12 +32,38 @@ class Functions():
                 code INTEGER PRIMARY KEY,
                 customer_name CHAR(40) NOT NULL,
                 phone INTEGER(20),
-                sector CHAR(30),
+                department CHAR(30),
                 observations TEXT
             )
         ''')
         self.conn.commit()
         print('Banco de dados criado')
+        self.bd_disconnect()
+
+    def add_customer(self):
+        # Adiciona a partir dos inputs requeridos ao usuário um novo cliente no banco de dados
+        self.code = self.code_entry.get()
+        self.name = self.name_entry.get()
+        self.phone = self.phone_entry.get()
+        self.department = self.department_entry.get()
+        self.notes = self.note_entry.get()
+        self.bd_connect()
+
+        self.cursor.execute(''' INSERT INTO radios (customer_name, phone, department, observations) 
+                            VALUES (?, ?, ?, ?)''', (self.name, self.phone, self.department, self.notes))
+        self.conn.commit()
+        self.bd_disconnect()
+        self.list_select()
+        self.clean_screen()
+
+    def list_select(self):
+        # Lista as informações salvas no bando de dados na tabela de apresentação
+        self.list_radio.delete(*self.list_radio.get_children())
+        self.bd_connect()
+        list = self.cursor.execute(''' SELECT code, customer_name, phone, department, observations FROM radios 
+                                   ORDER BY code ASC; ''')
+        for i in list:
+            self.list_radio.insert('', END, values=i)
         self.bd_disconnect()
 
 class Application(Functions):
@@ -49,6 +75,7 @@ class Application(Functions):
         self.widgets_search_frame()
         self.list_table_frame()
         self.assemble_tables()
+        self.list_select()
         window.mainloop()
 
     def screen(self):
@@ -81,7 +108,7 @@ class Application(Functions):
 
         # Criando botão Novo
         self.bt_new = Button(self.search_frame, text= 'Novo',
-                             bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+                             bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.add_customer)
         self.bt_new.place(relx= 0.6, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando botão Alterar
@@ -106,21 +133,28 @@ class Application(Functions):
         self.lb_name.place(relx= 0.05, rely= 0.35)
 
         self.name_entry = Entry(self.search_frame, relief= 'groove')
-        self.name_entry.place(relx= 0.05, rely= 0.45, relwidth= 0.85)
+        self.name_entry.place(relx= 0.05, rely= 0.45, relwidth= 0.4)
 
         # Criando label e input do telefone
         self.lb_phone = Label(self.search_frame, text='Telefone', bg= '#dfe3ee', fg='#107db2')
-        self.lb_phone.place(relx= 0.05, rely= 0.6)
+        self.lb_phone.place(relx= 0.5, rely= 0.35)
 
         self.phone_entry = Entry(self.search_frame, relief= 'groove')
-        self.phone_entry.place(relx= 0.05, rely= 0.7, relwidth= 0.4)
+        self.phone_entry.place(relx= 0.5, rely= 0.45, relwidth= 0.4)
 
         # Criando label e input do setor
-        self.lb_sector = Label(self.search_frame, text='Setor', bg= '#dfe3ee', fg='#107db2')
-        self.lb_sector.place(relx= 0.5, rely= 0.6)
+        self.lb_department = Label(self.search_frame, text='Setor', bg= '#dfe3ee', fg='#107db2')
+        self.lb_department.place(relx= 0.05, rely= 0.6)
 
-        self.sector_entry = Entry(self.search_frame, relief= 'groove')
-        self.sector_entry.place(relx= 0.5, rely= 0.7, relwidth= 0.4)
+        self.department_entry = Entry(self.search_frame, relief= 'groove')
+        self.department_entry.place(relx= 0.05, rely= 0.7, relwidth= 0.4)
+
+        # Criando label e input do observação
+        self.lb_note = Label(self.search_frame, text='Observações', bg= '#dfe3ee', fg='#107db2')
+        self.lb_note.place(relx= 0.5, rely= 0.6)
+
+        self.note_entry = Entry(self.search_frame, relief= 'groove')
+        self.note_entry.place(relx= 0.5, rely= 0.7, relwidth= 0.4, relheight= 0.2)
 
     def list_table_frame(self):
         # Criando a listagem das informações em formato de tabela
