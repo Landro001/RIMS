@@ -11,6 +11,7 @@ class Functions():
         self.name_entry.delete(0, END)
         self.phone_entry.delete(0, END)
         self.department_entry.delete(0, END)
+        self.note_entry.delete(0, END)
 
     def bd_connect(self):
         # Faz a conexão ao banco de dados
