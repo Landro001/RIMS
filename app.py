@@ -5,7 +5,7 @@ import sqlite3
 window = Tk()
 
 class Functions():
-    def clean_screen(self):
+    def clean_entrys(self):
         # Limpar o conteúdo escrito nos inputs
         self.code_entry.delete(0, END)
         self.name_entry.delete(0, END)
@@ -41,31 +41,69 @@ class Functions():
         print('Banco de dados criado')
         self.bd_disconnect()
 
-    def add_customer(self):
-        # Adiciona a partir dos inputs requeridos ao usuário um novo cliente no banco de dados
+    def entry_vars(self):
+        # Variáveis para os inputs
         self.code = self.code_entry.get()
         self.name = self.name_entry.get()
         self.phone = self.phone_entry.get()
         self.department = self.department_entry.get()
         self.notes = self.note_entry.get()
+
+    def add_customer(self):
+        # Adiciona a partir dos inputs requeridos ao usuário um novo cliente no banco de dados
+        self.entry_vars()
         self.bd_connect()
 
         self.cursor.execute(''' INSERT INTO radios (customer_name, phone, department, observations) 
                             VALUES (?, ?, ?, ?)''', (self.name, self.phone, self.department, self.notes))
         self.conn.commit()
         self.bd_disconnect()
-        self.list_select()
-        self.clean_screen()
+        self.select_list()
+        self.clean_entrys()
 
-    def list_select(self):
+    def select_list(self):
         # Lista as informações salvas no bando de dados na tabela de apresentação
-        self.list_radio.delete(*self.list_radio.get_children())
+        self.radio_list.delete(*self.radio_list.get_children())
         self.bd_connect()
         list = self.cursor.execute(''' SELECT code, customer_name, phone, department, observations FROM radios 
                                    ORDER BY code ASC; ''')
         for i in list:
-            self.list_radio.insert('', END, values=i)
+            self.radio_list.insert('', END, values=i)
         self.bd_disconnect()
+
+    def on_double_click(self, event):
+        # Ao clicar duas vezes em um item da tabela, os dados são inseridos nos inputs
+        self.clean_entrys()
+        self.radio_list.selection()
+
+        for n in self.radio_list.selection():
+            col1, col2, col3, col4, col5 = self.radio_list.item(n, 'values')
+            self.code_entry.insert(END, col1)
+            self.name_entry.insert(END, col2)
+            self.phone_entry.insert(END, col3)
+            self.department_entry.insert(END, col4)
+            self.note_entry.insert(END, col5)
+
+    def delete_customer(self):
+        # Deleta um cliente do banco de dados
+        self.entry_vars()
+        self.bd_connect()
+        self.cursor.execute('''DELETE FROM radios WHERE code = ?''', (self.code))
+        self.conn.commit()
+        self.bd_disconnect()
+        self.clean_entrys()
+        self.select_list()
+
+    def change_customer(self):
+        # Altera as informações de um cliente no banco de dados
+        self.entry_vars()
+        self.bd_connect()
+        self.cursor.execute('''UPDATE radios SET customer_name = ?, phone = ?, department = ?, observations = ? WHERE code = ?''', (self.name, self.phone, self.department, self.notes, self.code))
+        self.conn.commit()
+        self.bd_disconnect()
+        self.select_list()
+        self.clean_entrys()
+
 
 class Application(Functions):
     def __init__(self):
@@ -76,7 +114,8 @@ class Application(Functions):
         self.widgets_search_frame()
         self.list_table_frame()
         self.assemble_tables()
-        self.list_select()
+        self.select_list()
+        self.menus()
         window.mainloop()
 
     def screen(self):
@@ -99,7 +138,7 @@ class Application(Functions):
     def widgets_search_frame(self):
         # Criando botão Limpar
         self.bt_clean = Button(self.search_frame, text= 'Limpar', 
-                               bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.clean_screen)
+                               bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.clean_entrys)
         self.bt_clean.place(relx= 0.3, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando botão Buscar
@@ -114,12 +153,12 @@ class Application(Functions):
 
         # Criando botão Alterar
         self.bt_change = Button(self.search_frame, text= 'Alterar',
-                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.change_customer)
         self.bt_change.place(relx= 0.7, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando botão Apagar
         self.bt_delete = Button(self.search_frame, text= 'Apagar',
-                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.delete_customer)
         self.bt_delete.place(relx= 0.8, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando label e input do código do rádio
@@ -159,28 +198,46 @@ class Application(Functions):
 
     def list_table_frame(self):
         # Criando a listagem das informações em formato de tabela
-        self.list_radio = ttk.Treeview(self.table_frame, height= 3, columns=("col1", "col2", "col3", "col4", "col5"))
-        self.list_radio.heading('#0', text='')
-        self.list_radio.heading('#1', text='Código')
-        self.list_radio.heading('#2', text='Nome')
-        self.list_radio.heading('#3', text='Telefone')
-        self.list_radio.heading('#4', text='Setor')
-        self.list_radio.heading('#5', text='Observações')
+        self.radio_list = ttk.Treeview(self.table_frame, height= 3, columns=("col1", "col2", "col3", "col4", "col5"))
+        self.radio_list.heading('#0', text='')
+        self.radio_list.heading('#1', text='Código')
+        self.radio_list.heading('#2', text='Nome')
+        self.radio_list.heading('#3', text='Telefone')
+        self.radio_list.heading('#4', text='Setor')
+        self.radio_list.heading('#5', text='Observações')
 
-        self.list_radio.column('#0', width= 1)
-        self.list_radio.column('#1', width= 50)
-        self.list_radio.column('#2', width= 135)
-        self.list_radio.column('#3', width= 125)
-        self.list_radio.column('#4', width= 100)
-        self.list_radio.column('#5', width= 150)
+        self.radio_list.column('#0', width= 1)
+        self.radio_list.column('#1', width= 50)
+        self.radio_list.column('#2', width= 135)
+        self.radio_list.column('#3', width= 125)
+        self.radio_list.column('#4', width= 100)
+        self.radio_list.column('#5', width= 150)
 
-        self.list_radio.place(relx= 0.01, rely= 0.1, relwidth= 0.95, relheight= 0.85)
+        self.radio_list.place(relx= 0.01, rely= 0.1, relwidth= 0.95, relheight= 0.85)
         
         #Criando a scrool bar da tabela
         self.scrool_list = Scrollbar(self.table_frame, orient='vertical')
-        self.list_radio.configure(yscroll= self.scrool_list.set)
+        self.radio_list.configure(yscroll= self.scrool_list.set)
         self.scrool_list.place(relx= 0.96, rely= 0.1, relwidth= 0.03, relheight= 0.85)
+        self.radio_list.bind('<Double-1>', self.on_double_click)
 
+    def menus(self):
+        # Criando o menu da aplicação
+        menu_bar = Menu(self.window)
+        self.window.config(menu=menu_bar)
+        options_menu = Menu(menu_bar)
+        about_menu = Menu(menu_bar)
+
+        # Função para sair da aplicação
+        def Quit(): self.window.destroy()
+
+        # Criando as opções do menu
+        menu_bar.add_cascade(label='Opções', menu=options_menu)
+        menu_bar.add_cascade(label='Sobre', menu=about_menu)
+
+        options_menu.add_command(label= 'Sair', command= Quit)
+        about_menu.add_command(label='Limpa Entradas', command= self.clean_entrys)
+        
 
         
 
