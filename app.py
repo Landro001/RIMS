@@ -49,28 +49,6 @@ class Functions():
         self.department = self.department_entry.get()
         self.notes = self.note_entry.get()
 
-    def add_customer(self):
-        # Adiciona a partir dos inputs requeridos ao usuário um novo cliente no banco de dados
-        self.entry_vars()
-        self.bd_connect()
-
-        self.cursor.execute(''' INSERT INTO radios (customer_name, phone, department, observations) 
-                            VALUES (?, ?, ?, ?)''', (self.name, self.phone, self.department, self.notes))
-        self.conn.commit()
-        self.bd_disconnect()
-        self.select_list()
-        self.clean_entrys()
-
-    def select_list(self):
-        # Lista as informações salvas no bando de dados na tabela de apresentação
-        self.radio_list.delete(*self.radio_list.get_children())
-        self.bd_connect()
-        list = self.cursor.execute(''' SELECT code, customer_name, phone, department, observations FROM radios 
-                                   ORDER BY code ASC; ''')
-        for i in list:
-            self.radio_list.insert('', END, values=i)
-        self.bd_disconnect()
-
     def on_double_click(self, event):
         # Ao clicar duas vezes em um item da tabela, os dados são inseridos nos inputs
         self.clean_entrys()
@@ -83,6 +61,18 @@ class Functions():
             self.phone_entry.insert(END, col3)
             self.department_entry.insert(END, col4)
             self.note_entry.insert(END, col5)
+    
+    def add_customer(self):
+        # Adiciona a partir dos inputs requeridos ao usuário um novo cliente no banco de dados
+        self.entry_vars()
+        self.bd_connect()
+
+        self.cursor.execute(''' INSERT INTO radios (customer_name, phone, department, observations) 
+                            VALUES (?, ?, ?, ?)''', (self.name, self.phone, self.department, self.notes))
+        self.conn.commit()
+        self.bd_disconnect()
+        self.select_list()
+        self.clean_entrys()
 
     def delete_customer(self):
         # Deleta um cliente do banco de dados
@@ -104,6 +94,29 @@ class Functions():
         self.select_list()
         self.clean_entrys()
 
+    def select_list(self):
+        # Lista as informações salvas no bando de dados na tabela de apresentação
+        self.radio_list.delete(*self.radio_list.get_children())
+        self.bd_connect()
+        list = self.cursor.execute(''' SELECT code, customer_name, phone, department, observations FROM radios 
+                                   ORDER BY code ASC; ''')
+        for i in list:
+            self.radio_list.insert('', END, values=i)
+        self.bd_disconnect()
+
+    def search_customer(self):
+        self.bd_connect()
+        self.radio_list.delete(*self.radio_list.get_children())
+
+        self.name_entry.insert(END, '%')
+        nome = self.name_entry.get()
+        self.cursor.execute(
+            '''SELECT code, customer_name, phone, department, observations FROM radios WHERE customer_name LIKE "%s" ORDER BY code ASC''' % nome)
+        search_name_customer = self.cursor.fetchall()
+        for i in search_name_customer:
+            self.radio_list.insert('', END, values=i)
+        self.clean_entrys()
+        self.bd_disconnect()
 
 class Application(Functions):
     def __init__(self):
@@ -143,7 +156,7 @@ class Application(Functions):
 
         # Criando botão Buscar
         self.bt_search = Button(self.search_frame, text= 'Buscar',
-                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'))
+                                bd= 2, bg= '#107db2', fg= 'white', font= ('verdana', 8, 'bold'), command= self.search_customer)
         self.bt_search.place(relx= 0.4, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
         # Criando botão Novo
