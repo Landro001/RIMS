@@ -105,6 +105,7 @@ class Functions():
         self.bd_disconnect()
 
     def search_customer(self):
+        # Busca um cliente no banco de dados a partir do nome
         self.bd_connect()
         self.radio_list.delete(*self.radio_list.get_children())
 
